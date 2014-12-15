@@ -1,0 +1,50 @@
+useDynLib(rSPACE)
+import(RMark, ggplot2)
+importFrom(tcltk, 
+  tkgrid,
+  tklabel,
+  tktoplevel,
+  tkwm.title,
+  tclVar,
+  tkbutton,
+  tkbind,
+  tclvalue,
+  "tclvalue<-",
+  tkwait.variable,
+  tkdestroy)
+importFrom(tcltk2,
+  tk2entry)
+importFrom(grid,
+  grid.newpage,
+  viewport,
+  pushViewport,
+  grid.layout)
+importFrom(sp,
+  CRS,
+  mapasp,
+  coordinates,
+  proj4string,
+  "proj4string<-")
+importFrom(raster,
+  extend,
+  extent,
+  raster,
+  getValues,
+  setValues,
+  reclassify,
+  res,
+  pointDistance,
+  distanceFromPoints,
+  writeRaster)
+importFrom(plyr,
+  ddply,
+  summarise)
+  
+  
+export(enter.parameters)
+export(create.landscapes)
+export(test_samples)
+export(wolverine_analysis)
+export(encounter.history)
+export(getResults)
+export(findPower)
