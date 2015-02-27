@@ -1,7 +1,7 @@
 Package: rSPACE
 Type: Package
 Title: Spatially-Explicit Power Analysis for Conservation and Ecology
-Version: 1.1.0
+Version: 1.1.1
 Date: 2015-02-27
 Author: Martha Ellis, Jake Ivan, Jody Tucker, Mike Schwartz
 Maintainer: Martha Ellis <martha.ellis@gmail.com>
@@ -11,6 +11,6 @@ Imports: raster, RMark, ggplot2, tcltk2, sp, grid, plyr, tcltk
 URL: http://github.com/mmellis/rSPACE
 BugReports: http://github.com/mmellis/rSPACE/issues
 NeedsCompilation: yes
-Packaged: 2015-02-28 00:10:44 UTC; marthamellis
+Packaged: 2015-04-07 23:52:52 UTC; marthamellis
 Repository: CRAN
-Date/Publication: 2015-02-28 06:50:32
+Date/Publication: 2015-04-08 07:26:52

@@ -11,6 +11,7 @@ create.landscapes<-function(n_runs, map, Parameters, ... ){
     saveParameters<-setDefault(additional.args$saveParameters, 1)
     saveGrid<-setDefault(additional.args$saveGrid, 1)
     skipConfirm<-setDefault(additional.args$skipConfirm, F)
+    add<-setDefault(additional.args$add, F)
 
   # 0. Set up files
    if(!skipConfirm){
@@ -23,7 +24,7 @@ create.landscapes<-function(n_runs, map, Parameters, ... ){
       }
    }
 
-   folder.dir <- paste(folder.dir, run.label, sep='/') 
+   folder.dir <- paste(folder.dir, run.label, sep='/')
    if(!file.exists(folder.dir)) dir.create(folder.dir)
 
 
