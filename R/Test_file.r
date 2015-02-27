@@ -10,7 +10,18 @@ wolverine_analysis<-function(n_yrs, ch=NULL, n_visit=NULL, sample_yr=0, FPC=1, .
 ## Subfunctions ################################################################
   tryN<-function(expr) tryCatch(expr, error=function(e) return(NULL))          #
   tryW<-function(expr) suppressWarnings(tryN(expr))                            #
-  tryM<-function(expr) suppressMessages(tryN(expr))                            #
+  tryM<-function(expr) suppressMessages(tryCatch(expr,                         #
+          error=function(e){                                                   #
+            if(grepl("mark.exe", e$message)){                                  #
+              stop(e$message, call.=F)                                         #
+            } else return(NULL)}))                                             #
+                                                                               #
+  time_int<-function(n_visit, n_yrs){                                          #
+    tmp<-rep(0,n_visit)                                                        #
+    tmp[n_visit] = 1                                                           #
+    tmp<-rep(tmp,n_yrs)                                                        #
+    return(tmp[-n_yrs*n_visit])                                                #
+    }                                                                          #
                                                                                #
   FPC_trendSE<-function(Random.effects.model, k, FPC){                         #
     trendSE<-Random.effects.model$beta[2,2]                                    #
@@ -46,7 +57,7 @@ wolverine_analysis<-function(n_yrs, ch=NULL, n_visit=NULL, sample_yr=0, FPC=1, .
           P_est <-tryN(RDoccupancy$results$real$estimate[which(row.names(RDoccupancy$results$real)=="p g1 s1 t1")])
    
           Trend_DM=cbind(1,1:n_yrs)
-          Random.effects.model<-tryW(variance.components(derived_psi,Trend_DM,derived_psi_vcv, REML=T))
+          Random.effects.model<-tryW(var.components.reml(theta=derived_psi,design=Trend_DM,vcv=derived_psi_vcv))
                 
   } else if(sample_yr == 1) {    #runs gap year analysis
 
@@ -81,8 +92,8 @@ wolverine_analysis<-function(n_yrs, ch=NULL, n_visit=NULL, sample_yr=0, FPC=1, .
           }
           
           Trend_DM = cbind(1,seq(1,n_yrs-1,by=2))
-          Random.effects.model<-tryW(variance.components(new_derived_psi,Trend_DM,new_derived_psi_vcv, REML=T))            
-      
+          Random.effects.model<-tryW(var.components.reml(theta=new_derived_psi,design=Trend_DM,vcv=new_derived_psi_vcv))
+
   } else if(sample_yr == 2) {    #runs skip year analysis
           ch<-drop_years(ch, n_visit, samples=sample_matrix)
           mark_data<-data.frame(ch=ch,freq=rep(1,length(ch)),stringsAsFactors=F)
@@ -105,7 +116,7 @@ wolverine_analysis<-function(n_yrs, ch=NULL, n_visit=NULL, sample_yr=0, FPC=1, .
           P_est <-tryN(RDoccupancy$results$real$estimate[which(row.names(RDoccupancy$results$real)=="p g1 s1 t1")])
    
           Trend_DM=cbind(1,1:n_yrs)
-          Random.effects.model<-tryW(variance.components(derived_psi,Trend_DM,derived_psi_vcv, REML=T)) 
+          Random.effects.model<-tryW(var.components.reml(theta=derived_psi,design=Trend_DM,vcv=derived_psi_vcv))
    }
    
    if(!is.null(Random.effects.model)){
@@ -113,7 +124,7 @@ wolverine_analysis<-function(n_yrs, ch=NULL, n_visit=NULL, sample_yr=0, FPC=1, .
      sim_results$trendSE        <- FPC_trendSE(Random.effects.model, k=nrow(Trend_DM), FPC)
    }
    if(!is.null(derived_psi)){
-     sim_results[1,4:(n_yrs+3)] <- matrix(derived_psi,nrow=1)
+     sim_results[1,grep('X',names(sim_results))] <- matrix(derived_psi,nrow=1)
      sim_results$p_est          <- P_est
      sim_results$singular       <- tryN(length(RDoccupancy$results$singular))
    }

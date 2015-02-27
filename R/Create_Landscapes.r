@@ -9,6 +9,7 @@ create.landscapes<-function(n_runs, map, Parameters, ... ){
     filter.map<-additional.args$filter.map
     printN<-setDefault(additional.args$printN, 1)
     saveParameters<-setDefault(additional.args$saveParameters, 1)
+    saveGrid<-setDefault(additional.args$saveGrid, 1)
     skipConfirm<-setDefault(additional.args$skipConfirm, F)
 
   # 0. Set up files
@@ -37,7 +38,7 @@ create.landscapes<-function(n_runs, map, Parameters, ... ){
 
   # 2. Set up map + grid layer
   if(missing(map)) stop("Missing habitat layer")
-  map<-checkMap(map)
+  map<-checkMap(map, filter.map)
 
   grid_layer<-createGrid(map, Parameters, filter.map)
   gridIDs<-unique(grid_layer)[unique(grid_layer)>0]
@@ -52,9 +53,12 @@ create.landscapes<-function(n_runs, map, Parameters, ... ){
     cat(paste("/*", gridIDs, "*/", ch, "1;"), sep="\n",file=output_file) 
   } # End runs loop
   
-  if(saveParameters==1)
+  if(saveParameters)
     save(Parameters, file=paste0(output.dir,'/Parameters.Rdata'))
+  if(saveGrid)
+    writeRaster(setValues(map, grid_layer), filename=paste0(output.dir,'/Grid.tif'), overwrite=T)
     
   return(list(DIR = folder.dir, 
           filenames=paste0(base.name,1:n_runs,'.txt')))
 } # End function
+createReplicates<-create.landscapes

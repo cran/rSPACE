@@ -12,14 +12,7 @@ switcheroo<-function(x,detP) {                                                 #
     if(x[i]=="1"){if(rbinom(1,1,prob=detP)==0) {x[i]="0"}}                     #
     }                                                                          #
     return(x)                                                                  #
-  }                                                                            #
-                                                                               #
-time_int<-function(n_visit, n_yrs){                                            #
-  tmp<-rep(0,n_visit)                                                          #
-  tmp[n_visit] = 1                                                             #
-  tmp<-rep(tmp,n_yrs)                                                          #
-  return(tmp[-n_yrs*n_visit])                                                  #
-  }                                                                            #
+  }                                                                            #                                                                          #
                                                                                #
 drop_visits<-function(ch, n_visits, n_yrs, n_visit){                           #
   tmp<-rep(F,n_visits)                                                         #
@@ -51,15 +44,6 @@ drop_detP <-function(ch, detP) {                                               #
                                                                                #
 FPC <- function(n, N, use=T) {if(use==T) return((N-n)/N) else return(1)}       #
                                                                                #
-                                                                               #
-variance.components<-function(est, Trend_DM, vcv.est, REML=T){                 #
-   if(REML==T) {                                                               #
-     return(var.components.reml(est,design=Trend_DM,vcv.est))                  #
-     } else {                                                                  #
-     return(var.components(est,design=Trend_DM,vcv.est))                       #
-     }                                                                         #
-}                                                                              #
-                                                                               # 
 set_grid<-function(filetest, SubPop=NULL){                                     #
  # Filter out cells that shouldn't be included.                                #
  # SubPop should be a raster with the previous grid layer                      #
@@ -101,6 +85,7 @@ test_samples<-function(folder, Parameters, ... ){
     max_xxx      <-setDefault(additional.args$max_xxx,1)
     min_xxx      <-setDefault(additional.args$min_xxx,1)
     base.name    <-setDefault(additional.args$base.name, "rSPACEx")
+    results.file <-setDefault(additional.args$results.file, "sim_results.txt")
     n_runs       <-additional.args$n_runs
     FPCind       <-setDefault(additional.args$FPC, TRUE)
     skipConfirm  <-setDefault(additional.args$skipConfirm, F)
@@ -132,9 +117,9 @@ test_samples<-function(folder, Parameters, ... ){
   if(!file.exists(folder)) 
     dir.create(folder) 
        
-  results_file<-paste(folder,"/sim_results.txt",sep="")
+  results_file<-paste(folder,results.file,sep="/")
   if(file.exists(results_file) & !overwrite)
-    stop("'sim_results.txt' already exists; use overwrite=TRUE")
+    stop(paste0("'",results.file,"' already exists; use overwrite=TRUE"))
      
   
   sim_results<-RunAnalysis(n_yrs)
@@ -152,7 +137,7 @@ test_samples<-function(folder, Parameters, ... ){
   gridTotal<-length(GRDuse)
     
   n_grid_sample = round(Parameters$grid_sample*gridTotal)
-  detP_test = adjust_detP(Parameters$detP_test,Parameters$detP)
+  detP_test = adjust_detP(Parameters$detP_test)
 
   
   #Main loop
@@ -165,7 +150,7 @@ test_samples<-function(folder, Parameters, ... ){
     test<-test$ch
    use = sample(match(GRDuse, GRD), gridTotal)
 
-   detPhold = Parameters$detP
+   detPhold = 1
   
   for(detPt in detP_test){
   test<-drop_detP(test, detPt)  # cumulatively reduces the number of detections
@@ -192,4 +177,4 @@ test_samples<-function(folder, Parameters, ... ){
   return(proc.time()[3]-time1)
 }
                 
-  
+testReplicates<-test_samples  
