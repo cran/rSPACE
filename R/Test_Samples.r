@@ -61,6 +61,7 @@ set_grid<-function(filetest, SubPop=NULL){                                     #
                                                                                #
 adjust_detP<-function(detP_test,detP1=1){                                      #
   n<-length(detP_test)                                                         #
+  detP_test<-sort(detP_test, decreasing=T)                                     #
   detP_test<-detP_test/c(detP1,detP_test)[-(n+1)]                              #
   return(detP_test)                                                            #
   }                                                                            #
@@ -76,7 +77,7 @@ file_label<-function(filename){                                                #
 ################################################################################
 
 ## Main loop function 
-test_samples<-function(folder, Parameters, ... ){
+testReplicates<-function(folder, Parameters, ... ){
   additional.args<-list(...)
     function_name<-setDefault(additional.args$function_name,"wolverine_analysis")
     SubPop       <-additional.args$SubPop
@@ -178,4 +179,7 @@ test_samples<-function(folder, Parameters, ... ){
   return(proc.time()[3]-time1)
 }
                 
-testReplicates<-test_samples  
+test_samples<-function(...){
+  .Deprecated("testReplicates")
+  return(0)
+  }  
